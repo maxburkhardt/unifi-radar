@@ -36,13 +36,14 @@
                                                         {:cookie-store cs}))))) "data"))
 
 (defn events []
-  (get (parse-string (:body (login-if-required (fn []
-                                                 (client/post (str unifi-address "/api/s/default/stat/event")
-                                                              {:cookie-store cs
-                                                               :content-type :json
-                                                               :headers {:X-Csrf-Token
-                                                                         (:value (get (clj-http.cookies/get-cookies cs) "csrf_token"))}
-                                                               :form-params
-                                                               {:_limit 500
-                                                                :_start 0
-                                                                :within 4320}}))))) "data"))
+  (get (parse-string (:body
+                       (login-if-required (fn []
+                                            (client/post (str unifi-address "/api/s/default/stat/event")
+                                                         {:cookie-store cs
+                                                          :content-type :json
+                                                          :headers {:X-Csrf-Token
+                                                                    (:value (get (clj-http.cookies/get-cookies cs) "csrf_token"))}
+                                                          :form-params
+                                                          {:_limit 500
+                                                           :_start 0
+                                                           :within 4320}}))))) "data"))
