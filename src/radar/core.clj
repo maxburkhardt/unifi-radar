@@ -12,7 +12,6 @@
 (defconfig ^:required sqs-queue-url)
 (defconfig ^:required aws-client-id)
 (defconfig ^:required aws-client-secret)
-(def grey {:hue 0 :saturation 0 :brightness 50})
 
 (defn get-wifi-client-names
   "Get the human-readable names for connected devices"
@@ -30,13 +29,7 @@
       (let [latest (get-wifi-client-names)]
         ;; Get the hosts that are only in the latest sweep
         (let [diff (clojure.set/difference latest seen)]
-          (if (> (count diff) 0)
-            (sqs/send
-              client
-              q
-              (generate-string
-                {:type :flow
-                 :palette [grey (get recognized-devices (first diff)) grey]}))))
+          (map (fn [device] (do (println device) (if (not (nil? (recognized-devices device))) (sqs/send client q (generate-string {:type :wheel :palette (get recognized-devices device) :direction :right}))))) diff))
         ;; Avoid crushing the UniFi server
         (Thread/sleep 5000)
         (recur latest)))))
